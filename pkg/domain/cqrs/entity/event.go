@@ -4,14 +4,15 @@ import (
 	"time"
 
 	"github.com/galaxyobe/go-ddd/pkg/constraints"
+	"github.com/galaxyobe/go-ddd/pkg/domain/cqrs/types"
 )
 
 // Event is a domain event describing a change that has happened to an aggregate.
 type Event[GUID constraints.GUID] interface {
 	// Type returns the type of the event.
-	Type() EventType
+	Type() types.EventType
 	// Data The data attached to the event.
-	Data() EventData
+	Data() types.EventData
 	// Timestamp of when the event was created.
 	Timestamp() time.Time
 	// Service is the service which pushed the event
