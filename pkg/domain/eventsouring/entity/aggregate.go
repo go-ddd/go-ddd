@@ -14,8 +14,6 @@ type Aggregate struct {
 	Type vo.AggregateType `json:"-"`
 	// OrgID is the organization belongs to.
 	OrgID string `json:"-"`
-	// ResourceOwner is the resource belongs to.
-	ResourceOwner string `json:"-"`
 	// InstanceID is the instance this aggregate belongs to.
 	InstanceID string `json:"-"`
 	// Version is the semver this aggregate represents.
@@ -76,13 +74,6 @@ func NewAggregate(
 	return a
 }
 
-// WithResourceOwner the resource owner of the aggregate option.
-func WithResourceOwner(resourceOwner string) aggregateOpt {
-	return func(aggregate *Aggregate) {
-		aggregate.ResourceOwner = resourceOwner
-	}
-}
-
 // WithInstanceID  the instance ID of the aggregate option.
 func WithInstanceID(instanceID string) aggregateOpt {
 	return func(aggregate *Aggregate) {
@@ -97,10 +88,10 @@ func AggregateFromWriteModel(
 	version vo.Version,
 ) *Aggregate {
 	return &Aggregate{
-		ID:            wm.AggregateID,
-		Type:          typ,
-		ResourceOwner: wm.ResourceOwner,
-		InstanceID:    wm.InstanceID,
-		Version:       version,
+		ID:         wm.AggregateID,
+		Type:       typ,
+		OrgID:      wm.OrgID,
+		InstanceID: wm.InstanceID,
+		Version:    version,
 	}
 }

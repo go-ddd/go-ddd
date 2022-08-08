@@ -14,7 +14,7 @@ type WriteModel struct {
 	AggregateID       vo.GUID             `json:"-"`
 	ProcessedSequence uint64              `json:"-"`
 	Events            []interfaces.IEvent `json:"-"`
-	ResourceOwner     string              `json:"-"`
+	OrgID             string              `json:"-"`
 	InstanceID        string              `json:"-"`
 	ChangeTime        time.Time           `json:"-"`
 }
@@ -36,8 +36,8 @@ func (wm *WriteModel) Reduce() error {
 	if wm.AggregateID.IsNull() {
 		wm.AggregateID = aggregate.ID
 	}
-	if wm.ResourceOwner == "" {
-		wm.ResourceOwner = aggregate.ResourceOwner
+	if wm.OrgID == "" {
+		wm.OrgID = aggregate.OrgID
 	}
 	if wm.InstanceID == "" {
 		wm.InstanceID = aggregate.InstanceID

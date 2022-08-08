@@ -2,7 +2,6 @@ package aggregate
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"sync"
 
@@ -74,15 +73,16 @@ func commandsToRepository(instanceID string, cmds []interfaces.ICommand) (events
 		}
 		aggregate := cmd.GetAggregate()
 		events[i] = &Event{
+			Type:          cmd.GetType(),
 			AggregateID:   aggregate.ID,
 			AggregateType: aggregate.Type,
-			ResourceOwner: sql.NullString{String: aggregate.ResourceOwner, Valid: aggregate.ResourceOwner != ""},
+			OrgID:         aggregate.OrgID,
 			InstanceID:    instanceID,
+			Version:       aggregate.Version,
+			Metadata:      cmd.GetMetadata(),
+			Data:          data,
 			Service:       cmd.GetService(),
 			Creator:       cmd.GetCreator(),
-			Type:          cmd.GetType(),
-			Version:       aggregate.Version,
-			Data:          data,
 		}
 		uniqueConstraints := cmd.GetUniqueConstraints()
 		if len(uniqueConstraints) > 0 {

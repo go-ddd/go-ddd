@@ -1,7 +1,6 @@
 package aggregate
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/entity"
@@ -28,10 +27,6 @@ type Event struct {
 	// InstanceID is the instance where this event belongs to
 	// use the ID of the instance.
 	InstanceID string
-	// ResourceOwner is the organisation which owns this aggregate
-	// an aggregate can only be managed by one organisation
-	// use the ID of the org
-	ResourceOwner sql.NullString
 	// Version describes the definition of the aggregate at a certain point in time
 	// it's used in read models to reduce the events in the correct definition.
 	Version vo.Version

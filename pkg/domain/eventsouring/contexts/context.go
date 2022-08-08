@@ -7,8 +7,21 @@ import (
 type key int
 
 const (
-	instanceIDKey key = iota + 1
+	orgIDKey key = iota + 1
+	instanceIDKey
 )
+
+func WithOrgID(ctx context.Context, id string) context.Context {
+	return context.WithValue(ctx, orgIDKey, id)
+}
+
+func GetOrgID(ctx context.Context) string {
+	instance, ok := ctx.Value(orgIDKey).(string)
+	if !ok {
+		return ""
+	}
+	return instance
+}
 
 func WithInstanceID(ctx context.Context, id string) context.Context {
 	return context.WithValue(ctx, instanceIDKey, id)
