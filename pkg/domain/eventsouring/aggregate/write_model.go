@@ -6,6 +6,7 @@ import (
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/entity"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/event"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
+	"github.com/galaxyobe/go-ddd/pkg/infrastructure/tools"
 )
 
 // WriteModel is the minimum representation of a command side write model.
@@ -34,7 +35,7 @@ func (wm *WriteModel) Reduce() error {
 	}
 
 	aggregate := wm.Events[0].GetAggregate()
-	if wm.AggregateID.IsNull() {
+	if tools.IsGUIDNull(wm.AggregateID) {
 		wm.AggregateID = aggregate.ID
 	}
 	if wm.OrgID == "" {

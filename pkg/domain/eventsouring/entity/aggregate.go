@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
+	"github.com/galaxyobe/go-ddd/pkg/infrastructure/tools"
 )
 
 // Aggregate is the basic implementation of Aggregater.
@@ -21,7 +22,7 @@ type Aggregate struct {
 }
 
 func (a Aggregate) Validate() error {
-	if a.ID.IsNull() {
+	if tools.IsGUIDNull(a.ID) {
 		return errors.New("aggregate id must not be empty")
 	}
 	if a.Type == "" {

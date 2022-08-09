@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
+	"github.com/galaxyobe/go-ddd/pkg/infrastructure/tools"
 )
 
 type ObjectRoot struct {
@@ -16,7 +17,7 @@ type ObjectRoot struct {
 }
 
 func (o *ObjectRoot) AppendEvent(event *Event) {
-	if o.AggregateID.IsNull() {
+	if tools.IsGUIDNull(o.AggregateID) {
 		o.AggregateID = event.AggregateID
 	} else if o.AggregateID != event.AggregateID {
 		return
@@ -37,5 +38,5 @@ func (o *ObjectRoot) AppendEvent(event *Event) {
 }
 
 func (o *ObjectRoot) IsZero() bool {
-	return o.AggregateID.IsNull()
+	return tools.IsGUIDNull(o.AggregateID)
 }
