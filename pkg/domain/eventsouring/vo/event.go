@@ -32,3 +32,22 @@ type EventData interface {
 	MarshalData() ([]byte, error)
 	UnmarshalData([]byte) error
 }
+
+type Bytes struct {
+	data []byte
+}
+
+func NewBytesEventData(data []byte) EventData {
+	return &Bytes{
+		data: data,
+	}
+}
+
+func (b Bytes) MarshalData() ([]byte, error) {
+	return b.data, nil
+}
+
+func (b Bytes) UnmarshalData(bytes []byte) error {
+	b.data = bytes
+	return nil
+}
