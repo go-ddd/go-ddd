@@ -1,9 +1,10 @@
-package entity
+package aggregate
 
 import (
 	"time"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/interfaces"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/entity"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/event"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
 
@@ -11,17 +12,17 @@ import (
 // It implements a basic reducer
 // it's purpose is to reduce events to create new ones
 type WriteModel struct {
-	AggregateID       vo.GUID             `json:"-"`
-	ProcessedSequence uint64              `json:"-"`
-	Events            []interfaces.IEvent `json:"-"`
-	OrgID             string              `json:"-"`
-	InstanceID        string              `json:"-"`
-	ChangeTime        time.Time           `json:"-"`
+	AggregateID       vo.GUID        `json:"-"`
+	ProcessedSequence uint64         `json:"-"`
+	Events            []event.IEvent `json:"-"`
+	OrgID             string         `json:"-"`
+	InstanceID        string         `json:"-"`
+	ChangeTime        time.Time      `json:"-"`
 }
 
 // AppendEvents adds all the events to the read model.
 // The function doesn't compute the new state of the read model
-func (rm *WriteModel) AppendEvents(events ...interfaces.IEvent) {
+func (rm *WriteModel) AppendEvents(events ...event.IEvent) {
 	rm.Events = append(rm.Events, events...)
 }
 
@@ -48,7 +49,22 @@ func (wm *WriteModel) Reduce() error {
 
 	// all events processed and not needed anymore
 	wm.Events = nil
-	wm.Events = []interfaces.IEvent{}
+	wm.Events = []event.IEvent{}
 
 	return nil
+}
+
+// NewAggregateFromWriteModel maps the given WriteModel to an Aggregate.
+func NewAggregateFromWriteModel(
+	wm *WriteModel,
+	typ vo.AggregateType,
+	version vo.Version,
+) *entity.Aggregate {
+	return &entity.Aggregate{
+		ID:         wm.AggregateID,
+		Type:       typ,
+		OrgID:      wm.OrgID,
+		InstanceID: wm.InstanceID,
+		Version:    version,
+	}
 }

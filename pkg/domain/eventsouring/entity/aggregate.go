@@ -74,24 +74,16 @@ func NewAggregate(
 	return a
 }
 
-// WithInstanceID  the instance ID of the aggregate option.
-func WithInstanceID(instanceID string) aggregateOpt {
+// WithOrgID the org ID of the aggregate option.
+func WithOrgID(orgID string) aggregateOpt {
 	return func(aggregate *Aggregate) {
-		aggregate.InstanceID = instanceID
+		aggregate.OrgID = orgID
 	}
 }
 
-// AggregateFromWriteModel maps the given WriteModel to an Aggregate.
-func AggregateFromWriteModel(
-	wm *WriteModel,
-	typ vo.AggregateType,
-	version vo.Version,
-) *Aggregate {
-	return &Aggregate{
-		ID:         wm.AggregateID,
-		Type:       typ,
-		OrgID:      wm.OrgID,
-		InstanceID: wm.InstanceID,
-		Version:    version,
+// WithInstanceID the instance ID of the aggregate option.
+func WithInstanceID(instanceID string) aggregateOpt {
+	return func(aggregate *Aggregate) {
+		aggregate.InstanceID = instanceID
 	}
 }

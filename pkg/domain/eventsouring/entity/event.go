@@ -1,9 +1,8 @@
-package aggregate
+package entity
 
 import (
 	"time"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/entity"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
 
@@ -65,8 +64,8 @@ func (e Event) GetType() vo.EventType {
 	return e.Type
 }
 
-func (e Event) GetAggregate() entity.Aggregate {
-	return entity.Aggregate{
+func (e Event) GetAggregate() Aggregate {
+	return Aggregate{
 		ID:         e.AggregateID,
 		Type:       e.AggregateType,
 		OrgID:      e.OrgID,
@@ -108,7 +107,7 @@ func (e Event) GetCreateTime() time.Time {
 }
 
 func (e Event) String() string {
-	return "implement me"
+	return string(e.AggregateType) + "/" + string(e.Type)
 }
 
 // Validate validate event.

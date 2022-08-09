@@ -5,10 +5,12 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/entity"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/event"
+
 	"github.com/Masterminds/squirrel"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/contexts"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/interfaces"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
@@ -21,7 +23,7 @@ type Eventstore struct {
 }
 
 type eventTypeInterceptor struct {
-	eventMapper func(*Event) (interfaces.IEvent, error)
+	eventMapper func(*entity.Event) (event.IEvent, error)
 }
 
 func NewEventstore(repo repository.IEventStore) *Eventstore {
@@ -38,7 +40,7 @@ func (es *Eventstore) Health(ctx context.Context) error {
 
 // Push pushes the events in a single transaction
 // an event needs at least an aggregate
-func (es *Eventstore) Push(ctx context.Context, cmds ...interfaces.ICommand) ([]interfaces.IEvent, error) {
+func (es *Eventstore) Push(ctx context.Context, cmds ...event.ICommand) ([]event.IEvent, error) {
 	events, constraints, err := commandsToRepository(contexts.GetInstanceID(ctx), cmds)
 	if err != nil {
 		return nil, err
@@ -53,7 +55,7 @@ func (es *Eventstore) Push(ctx context.Context, cmds ...interfaces.ICommand) ([]
 		return nil, err
 	}
 
-	// go notify(eventReaders)
+	go event.Notify(eventReaders)
 	return eventReaders, nil
 }
 
@@ -61,8 +63,8 @@ func (es *Eventstore) NewInstance(ctx context.Context, instanceID string) error 
 	return es.repo.CreateInstance(ctx, instanceID)
 }
 
-func commandsToRepository(instanceID string, cmds []interfaces.ICommand) (events []*Event, constraints []*vo.UniqueConstraint, err error) {
-	events = make([]*Event, len(cmds))
+func commandsToRepository(instanceID string, cmds []event.ICommand) (events []*entity.Event, constraints []*vo.UniqueConstraint, err error) {
+	events = make([]*entity.Event, len(cmds))
 	for i, cmd := range cmds {
 		if err = cmd.Validate(); err != nil {
 			return nil, nil, err
@@ -72,7 +74,7 @@ func commandsToRepository(instanceID string, cmds []interfaces.ICommand) (events
 			return nil, nil, err
 		}
 		aggregate := cmd.GetAggregate()
-		events[i] = &Event{
+		events[i] = &entity.Event{
 			Type:          cmd.GetType(),
 			AggregateID:   aggregate.ID,
 			AggregateType: aggregate.Type,
@@ -95,7 +97,7 @@ func commandsToRepository(instanceID string, cmds []interfaces.ICommand) (events
 
 // Filter filters the stored events based on the searchQuery
 // and maps the events to the defined event structs
-func (es *Eventstore) Filter(ctx context.Context, query squirrel.SelectBuilder) ([]interfaces.IEvent, error) {
+func (es *Eventstore) Filter(ctx context.Context, query squirrel.SelectBuilder) ([]event.IEvent, error) {
 	if instanceID := contexts.GetInstanceID(ctx); instanceID != "" {
 		query = query.Where("")
 	}
@@ -106,15 +108,15 @@ func (es *Eventstore) Filter(ctx context.Context, query squirrel.SelectBuilder) 
 	return es.mapEvents(events)
 }
 
-func (es *Eventstore) mapEvents(events []*Event) (mappedEvents []interfaces.IEvent, err error) {
-	mappedEvents = make([]interfaces.IEvent, len(events))
+func (es *Eventstore) mapEvents(events []*entity.Event) (mappedEvents []event.IEvent, err error) {
+	mappedEvents = make([]event.IEvent, len(events))
 
-	for i, event := range events {
-		interceptor := es.getEventTypeInterceptor(event.GetType())
+	for i, e := range events {
+		interceptor := es.getEventTypeInterceptor(e.GetType())
 		if interceptor.eventMapper == nil {
 			return nil, errors.New("event mapper not defined")
 		}
-		mappedEvents[i], err = interceptor.eventMapper(event)
+		mappedEvents[i], err = interceptor.eventMapper(e)
 		if err != nil {
 			return nil, err
 		}
@@ -139,7 +141,7 @@ type Reducer interface {
 	// it only appends the newly added events
 	Reduce() error
 	// AppendEvents appends the passed events to an internal list of events
-	AppendEvents(...interfaces.IEvent)
+	AppendEvents(...event.IEvent)
 }
 
 // FilterToReducer filters the events based on the search query, appends all events to the reducer and calls it's reduce function
@@ -179,7 +181,7 @@ func (es *Eventstore) FilterToQueryReducer(ctx context.Context, r QueryReducer) 
 }
 
 // RegisterFilterEventMapper registers a function for mapping an eventstore event to an event
-func (es *Eventstore) RegisterFilterEventMapper(eventType vo.EventType, mapper func(*Event) (interfaces.IEvent, error)) *Eventstore {
+func (es *Eventstore) RegisterFilterEventMapper(eventType vo.EventType, mapper func(*entity.Event) (event.IEvent, error)) *Eventstore {
 	if mapper == nil || eventType == "" {
 		return es
 	}
