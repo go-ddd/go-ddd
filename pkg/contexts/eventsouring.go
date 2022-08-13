@@ -6,10 +6,10 @@ import (
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
 
-type key int
+type eventsouringKey int
 
 const (
-	orgIDKey key = iota + 1
+	orgIDKey eventsouringKey = iota + 1
 	instanceIDKey
 	serviceKey
 	creatorKey

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/galaxyobe/go-ddd/pkg/contexts"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/entity"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/event"
 
 	"github.com/Masterminds/squirrel"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/contexts"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
@@ -99,7 +99,7 @@ func commandsToRepository(instanceID string, cmds []event.ICommand) (events []*e
 // and maps the events to the defined event structs
 func (es *Eventstore) Filter(ctx context.Context, query squirrel.SelectBuilder) ([]event.IEvent, error) {
 	if instanceID := contexts.GetInstanceID(ctx); instanceID != "" {
-		query = query.Where("")
+		query = query.Where("instance_id = ?", instanceID)
 	}
 	events, err := es.repo.Filter(ctx, query)
 	if err != nil {
@@ -157,9 +157,17 @@ func (es *Eventstore) FilterToReducer(ctx context.Context, query squirrel.Select
 // LatestSequence filters the latest sequence for the given search query
 func (es *Eventstore) LatestSequence(ctx context.Context, query squirrel.SelectBuilder) (uint64, error) {
 	if instanceID := contexts.GetInstanceID(ctx); instanceID != "" {
-		query = query.Where("")
+		query = query.Where("instance_id = ?", instanceID)
 	}
 	return es.repo.LatestSequence(ctx, query)
+}
+
+// InstanceIDs returns the instance ids found by the search query
+func (es *Eventstore) InstanceIDs(ctx context.Context, query squirrel.SelectBuilder) ([]string, error) {
+	if instanceID := contexts.GetInstanceID(ctx); instanceID != "" {
+		query = query.Where("instance_id = ?", instanceID)
+	}
+	return es.repo.InstanceIDs(ctx, query)
 }
 
 type QueryReducer interface {

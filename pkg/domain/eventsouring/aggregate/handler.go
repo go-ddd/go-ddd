@@ -17,7 +17,7 @@ type HandlerOptions struct {
 type Handler struct {
 	Eventstore *Eventstore
 	Sub        *event.Subscription
-	EventQueue chan event.IEvent
+	eventQueue chan event.IEvent
 }
 
 func NewHandler(option HandlerOptions) Handler {
@@ -26,14 +26,25 @@ func NewHandler(option HandlerOptions) Handler {
 	}
 	return Handler{
 		Eventstore: option.Eventstore,
-		EventQueue: make(chan event.IEvent, option.EventQueueSize),
+		eventQueue: make(chan event.IEvent, option.EventQueueSize),
 	}
 }
 
+func (h *Handler) GetEventQueue() <-chan event.IEvent {
+	return h.eventQueue
+}
+
 func (h *Handler) Subscribe(aggregateTypes ...vo.AggregateType) {
-	h.Sub = event.SubscribeAggregates(h.EventQueue, aggregateTypes...)
+	h.Sub = event.SubscribeAggregates(h.eventQueue, aggregateTypes...)
 }
 
 func (h *Handler) SubscribeEventTypes(aggregateType vo.AggregateType, eventTypes ...vo.EventType) {
-	h.Sub = event.SubscribeEventTypes(h.EventQueue, aggregateType, eventTypes...)
+	h.Sub = event.SubscribeEventTypes(h.eventQueue, aggregateType, eventTypes...)
+}
+
+func (h *Handler) Unsubscribe() {
+	if h.Sub == nil {
+		return
+	}
+	h.Sub.Unsubscribe()
 }

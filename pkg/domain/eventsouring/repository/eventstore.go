@@ -20,6 +20,8 @@ type IEventStore interface {
 	Filter(ctx context.Context, query squirrel.SelectBuilder) (events []*entity.Event, err error)
 	// LatestSequence returns the latest sequence.
 	LatestSequence(ctx context.Context, query squirrel.SelectBuilder) (uint64, error)
+	// InstanceIDs returns the instance ids found by the search query
+	InstanceIDs(ctx context.Context, query squirrel.SelectBuilder) ([]string, error)
 	// CreateInstance creates a new sequence for the given instance
 	CreateInstance(ctx context.Context, instanceID string) error
 	// Close closes the EventStore.

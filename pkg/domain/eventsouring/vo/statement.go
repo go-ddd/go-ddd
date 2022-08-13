@@ -15,7 +15,7 @@ func (stmts Statements) Swap(i, j int)      { stmts[i], stmts[j] = stmts[j], stm
 func (stmts Statements) Less(i, j int) bool { return stmts[i].Sequence < stmts[j].Sequence }
 
 type ProjectionExecute func(ctx context.Context, ex interfaces.IExecContext, projectionName string) error
-type Query func(*vo.ExecOptions) (string, []any)
+type Query func(*vo.ExecOptions) (query string, args []any)
 
 type Statement struct {
 	AggregateType    AggregateType
