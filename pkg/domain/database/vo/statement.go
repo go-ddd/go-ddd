@@ -9,9 +9,10 @@ import (
 type ExecOption func(*ExecOptions)
 
 type ExecOptions struct {
-	TableName string
-	Columns   []Column
-	Err       error
+	TableName  string
+	Columns    []Column
+	Conditions []Condition
+	Err        error
 }
 
 func WithTableSuffix(name string) ExecOption {

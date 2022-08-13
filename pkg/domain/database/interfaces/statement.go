@@ -51,8 +51,8 @@ type IPrepareContext interface {
 }
 
 type IStatement interface {
-	Create(*vo.ExecOptions) (string, []any)
-	Upsert(*vo.ExecOptions) (string, []any)
-	Update(*vo.ExecOptions) (string, []any)
-	Delete(*vo.ExecOptions) (string, []any)
+	Create(*vo.ExecOptions) (query string, args []any)
+	Upsert(*vo.ExecOptions) (query string, args []any)
+	Update(*vo.ExecOptions) (query string, args []any)
+	Delete(*vo.ExecOptions) (query string, args []any)
 }
