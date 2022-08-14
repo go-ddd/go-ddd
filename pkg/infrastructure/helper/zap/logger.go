@@ -14,10 +14,10 @@ func NewLogger(logger *zap.Logger) *Logger {
 	}
 }
 
-func (log *Logger) OnError(err error, fields ...zap.Field) *Logger {
+func (log *Logger) OnError(err error, fields ...zap.Field) IZapLog {
 	switch {
 	case err == nil:
-		return &Logger{Logger: zap.NewNop()}
+		return NewNopOut()
 	case len(fields) == 0:
 		return &Logger{Logger: log.With(zap.Error(err))}
 	default:

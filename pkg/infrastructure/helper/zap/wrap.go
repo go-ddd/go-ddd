@@ -71,10 +71,10 @@ func (log *wrapLogger) Core() zapcore.Core {
 	return ((*zap.Logger)(log)).Core()
 }
 
-func (log *wrapLogger) OnError(err error, fields ...zap.Field) *zap.Logger {
+func (log *wrapLogger) OnError(err error, fields ...zap.Field) IZapLog {
 	switch {
 	case err == nil:
-		return zap.NewNop()
+		return NewNopOut()
 	case len(fields) == 0:
 		return ((*zap.Logger)(log)).With(zap.Error(err))
 	default:
