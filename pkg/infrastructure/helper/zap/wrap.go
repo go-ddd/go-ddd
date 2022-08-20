@@ -1,6 +1,8 @@
 package zap_helper
 
 import (
+	"context"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -69,6 +71,14 @@ func (log *wrapLogger) Sync() error {
 
 func (log *wrapLogger) Core() zapcore.Core {
 	return ((*zap.Logger)(log)).Core()
+}
+
+func (log *wrapLogger) WithContext(ctx context.Context) ILogger {
+	fields := GetFieldsFromContext(ctx)
+	if len(fields) == 0 {
+		return log
+	}
+	return Wrap(((*zap.Logger)(log)).With(fields...))
 }
 
 func (log *wrapLogger) OnError(err error, fields ...zap.Field) IZapLog {

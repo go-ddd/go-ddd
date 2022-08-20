@@ -1,6 +1,8 @@
 package zap_helper
 
 import (
+	"context"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -29,5 +31,6 @@ type IZapLogger interface {
 
 type ILogger interface {
 	IZapLogger
+	WithContext(ctx context.Context) ILogger
 	OnError(err error, fields ...zap.Field) IZapLog
 }
