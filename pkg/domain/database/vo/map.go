@@ -7,10 +7,10 @@ import (
 	"reflect"
 )
 
-// Metadata meta data
-type Metadata map[string]any
+// StringMap string map data
+type StringMap map[string]any
 
-func (m *Metadata) Scan(value any) error {
+func (m *StringMap) Scan(value any) error {
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("want to []byte type, but got type: %s", reflect.TypeOf(value))
@@ -18,7 +18,7 @@ func (m *Metadata) Scan(value any) error {
 	return json.Unmarshal(bytes, m)
 }
 
-func (m *Metadata) Value() (driver.Value, error) {
+func (m *StringMap) Value() (driver.Value, error) {
 	if m == nil {
 		return nil, nil
 	}

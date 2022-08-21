@@ -10,6 +10,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
 
 const (
@@ -97,6 +99,6 @@ func (h *locker) lockStatement(lockDuration time.Duration, instanceIDs []string)
 		valueQueries[i] = "($1, now()+$2::INTERVAL, $3, $" + strconv.Itoa(i+4) + ")"
 		values[i+3] = instanceID
 	}
-	values[len(values)-1] = pq.StringArray(instanceIDs)
+	values[len(values)-1] = vo.StringArray(instanceIDs)
 	return h.lockStmt(strings.Join(valueQueries, ", "), len(values)), values
 }

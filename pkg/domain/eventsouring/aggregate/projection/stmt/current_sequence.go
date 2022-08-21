@@ -24,7 +24,7 @@ type instanceSequence struct {
 }
 
 func (h *StatementHandler) currentSequences(ctx context.Context, query func(context.Context, string, ...interface{}) (*sql.Rows, error), instanceIDs []string) (currentSequences, error) {
-	rows, err := query(ctx, h.currentSequenceStmt, h.ProjectionName, pq.StringArray(instanceIDs))
+	rows, err := query(ctx, h.currentSequenceStmt, h.ProjectionName, vo.StringArray(instanceIDs))
 	if err != nil {
 		return nil, err
 	}

@@ -10,3 +10,8 @@ type (
 	Column      = vo.Column
 	Condition   = vo.Condition
 )
+
+type (
+	StringArray = vo.StringArray
+	Metadata    = vo.StringMap
+)
