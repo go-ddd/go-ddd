@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/contexts"
+	"github.com/galaxyobe/go-ddd/pkg/contexts"
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
 )
 
