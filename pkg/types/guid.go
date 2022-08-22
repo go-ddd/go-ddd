@@ -1,5 +1,9 @@
 package types
 
+import (
+	"fmt"
+)
+
 type GUIDKind int
 
 const (
@@ -7,6 +11,19 @@ const (
 	BytesGUIDKind
 	Int64GUIDKind
 )
+
+func (k GUIDKind) String() string {
+	switch k {
+	case StringGUIDKind:
+		return "string"
+	case BytesGUIDKind:
+		return "bytes"
+	case Int64GUIDKind:
+		return "int64"
+	default:
+		return fmt.Sprintf("GUIDKind(%d)", k)
+	}
+}
 
 type GUID interface {
 	Kind() GUIDKind

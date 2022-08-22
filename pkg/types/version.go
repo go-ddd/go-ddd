@@ -9,9 +9,9 @@ import (
 	"strconv"
 )
 
-// versionRegexp
+// VersionRegexp
 // vmajor[.minor][.patch]
-var versionRegexp = regexp.MustCompile(`^v(?P<major>[0-9]|[1-9][0-9]|[1-9][0-9][0-9])(?:\.(?P<minor>[0-9]|[1-9][0-9]|[1-9][0-9][0-9]))?(?:\.(?P<patch>[0-9]|[1-9][0-9]|[1-9][0-9][0-9]))?$`)
+var VersionRegexp = regexp.MustCompile(`^v(?P<major>[0-9]|[1-9][0-9]|[1-9][0-9][0-9])(?:\.(?P<minor>[0-9]|[1-9][0-9]|[1-9][0-9][0-9]))?(?:\.(?P<patch>[0-9]|[1-9][0-9]|[1-9][0-9][0-9]))?$`)
 
 var ErrSemverVersion = errors.New("version is not semver")
 
@@ -22,7 +22,7 @@ type Version string
 
 // Validate checks if the v is semver
 func (v Version) Validate() error {
-	if !versionRegexp.MatchString(string(v)) {
+	if !VersionRegexp.MatchString(string(v)) {
 		return ErrSemverVersion
 	}
 	return nil
@@ -37,7 +37,7 @@ func (v Version) String() string {
 // vmajor[.minor][.patch]
 // int version is vmajor*1e6+minor*1e3+patch
 func (v Version) IntVersion() int {
-	items := versionRegexp.FindStringSubmatch(string(v))
+	items := VersionRegexp.FindStringSubmatch(string(v))
 	if len(items) != 4 {
 		return -1
 	}
