@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/event"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/predicate"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/event"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/predicate"
 )
 
 // EventDelete is the builder for deleting a Event entity.
@@ -72,7 +72,7 @@ func (ed *EventDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: event.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: event.FieldID,
 			},
 		},

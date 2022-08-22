@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/galaxyobe/go-ddd/pkg/domain/database/do"
 	"github.com/galaxyobe/go-ddd/pkg/domain/database/interfaces"
-	"github.com/galaxyobe/go-ddd/pkg/domain/database/vo"
 )
 
 type Statements []Statement
@@ -15,7 +15,7 @@ func (stmts Statements) Swap(i, j int)      { stmts[i], stmts[j] = stmts[j], stm
 func (stmts Statements) Less(i, j int) bool { return stmts[i].Sequence < stmts[j].Sequence }
 
 type ProjectionExecute func(ctx context.Context, ex interfaces.IExecContext, projectionName string) error
-type Query func(*vo.ExecOptions) (query string, args []any)
+type Query func(*do.ExecOptions) (query string, args []any)
 
 type Statement struct {
 	AggregateType    AggregateType
@@ -35,7 +35,7 @@ var (
 	ErrExecFailed   = errors.New("exec failed")
 )
 
-func ExecProjection(options vo.ExecOptions, q Query, opts []vo.ExecOption) ProjectionExecute {
+func ExecProjection(options do.ExecOptions, q Query, opts []do.ExecOption) ProjectionExecute {
 	return func(ctx context.Context, ex interfaces.IExecContext, projectionName string) error {
 		if projectionName == "" {
 			return ErrNoProjection

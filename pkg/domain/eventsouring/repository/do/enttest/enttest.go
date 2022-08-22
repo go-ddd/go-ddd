@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do"
 	// required by schema hooks.
-	_ "github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/runtime"
+	_ "github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/migrate"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/migrate"
 )
 
 type (

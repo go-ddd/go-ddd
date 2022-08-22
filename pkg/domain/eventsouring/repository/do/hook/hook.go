@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do"
 )
 
 // The EventFunc type is an adapter to allow the use of ordinary
@@ -117,7 +117,6 @@ func HasFields(field string, fields ...string) Condition {
 // If executes the given hook under condition.
 //
 //	hook.If(ComputeAverage, And(HasFields(...), HasAddedFields(...)))
-//
 func If(hk do.Hook, cond Condition) do.Hook {
 	return func(next do.Mutator) do.Mutator {
 		return do.MutateFunc(func(ctx context.Context, m do.Mutation) (do.Value, error) {
@@ -132,7 +131,6 @@ func If(hk do.Hook, cond Condition) do.Hook {
 // On executes the given hook only for the given operation.
 //
 //	hook.On(Log, do.Delete|do.Create)
-//
 func On(hk do.Hook, op do.Op) do.Hook {
 	return If(hk, HasOp(op))
 }
@@ -140,7 +138,6 @@ func On(hk do.Hook, op do.Op) do.Hook {
 // Unless skips the given hook only for the given operation.
 //
 //	hook.Unless(Log, do.Update|do.UpdateOne)
-//
 func Unless(hk do.Hook, op do.Op) do.Hook {
 	return If(hk, Not(HasOp(op)))
 }
@@ -161,7 +158,6 @@ func FixedError(err error) do.Hook {
 //			Reject(do.Delete|do.Update),
 //		}
 //	}
-//
 func Reject(op do.Op) do.Hook {
 	hk := FixedError(fmt.Errorf("%s operation is not allowed", op))
 	return On(hk, op)

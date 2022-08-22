@@ -22,7 +22,7 @@ func (Event) Fields() []ent.Field {
 		field.String("aggregate_type").GoType(vo.AggregateType("")).Immutable().NotEmpty().Comment("event aggregate type"),
 		field.String("org_id").Immutable().NotEmpty().Comment("organisation id"),
 		field.String("instance_id").Immutable().NotEmpty().Comment("instance id"),
-		field.JSON("metadata", &vo.Metadata{}).Optional().Immutable().Comment("metadata JSON"),
+		field.Bytes("metadata").GoType(vo.Metadata{}).Optional().Immutable().Comment("metadata JSON"),
 		field.Bytes("data").Optional().Immutable().Comment("event data JSON"),
 		field.Uint64("sequence").Immutable().Comment("event sequence"),
 		field.Uint64("previous_aggregate_sequence").Immutable().Comment("previous aggregate sequence"),

@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/event"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/event"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -81,7 +81,6 @@ type AggregateFunc func(*sql.Selector) string
 //	GroupBy(field1, field2).
 //	Aggregate(do.As(do.Sum(field1), "sum_field1"), (do.As(do.Sum(field2), "sum_field2")).
 //	Scan(ctx, &v)
-//
 func As(fn AggregateFunc, end string) AggregateFunc {
 	return func(s *sql.Selector) string {
 		return sql.As(fn(s), end)

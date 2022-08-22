@@ -29,6 +29,7 @@ func NewGUID(name string, kind types.GUIDKind, opts ...FieldOption) GUID {
 		Field: Field{
 			Name: name,
 		},
+		Kind: kind,
 	}
 	obj.Field.Apply(opts...)
 	return obj

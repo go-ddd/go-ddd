@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/galaxyobe/go-ddd/pkg/domain/database/vo"
+	"github.com/galaxyobe/go-ddd/pkg/domain/database/do"
 )
 
 // IExec is the interface that wraps the Exec method.
@@ -51,8 +51,8 @@ type IPrepareContext interface {
 }
 
 type IStatement interface {
-	Create(*vo.ExecOptions) (query string, args []any)
-	Upsert(*vo.ExecOptions) (query string, args []any)
-	Update(*vo.ExecOptions) (query string, args []any)
-	Delete(*vo.ExecOptions) (query string, args []any)
+	Create(*do.ExecOptions) (query string, args []any)
+	Upsert(*do.ExecOptions) (query string, args []any)
+	Update(*do.ExecOptions) (query string, args []any)
+	Delete(*do.ExecOptions) (query string, args []any)
 }

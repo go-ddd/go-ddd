@@ -1,17 +1,17 @@
 package vo
 
 import (
-	"github.com/galaxyobe/go-ddd/pkg/domain/database/vo"
+	"github.com/galaxyobe/go-ddd/pkg/domain/database/do"
 )
 
 type (
-	ExecOptions = vo.ExecOptions
-	ExecOption  = vo.ExecOption
-	Column      = vo.Column
-	Condition   = vo.Condition
+	ExecOptions = do.ExecOptions
+	ExecOption  = do.ExecOption
+	Column      = do.Column
+	Condition   = do.Condition
 )
 
 type (
-	StringArray = vo.StringArray
-	Metadata    = vo.StringMap
+	StringArray = do.StringArray
+	Metadata    = do.StringMap
 )

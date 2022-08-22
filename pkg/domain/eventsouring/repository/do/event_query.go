@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/event"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/predicate"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/event"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/predicate"
 )
 
 // EventQuery is the builder for querying Event entities.
@@ -83,8 +83,8 @@ func (eq *EventQuery) FirstX(ctx context.Context) *Event {
 
 // FirstID returns the first Event ID from the query.
 // Returns a *NotFoundError when no Event ID was found.
-func (eq *EventQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EventQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -96,7 +96,7 @@ func (eq *EventQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (eq *EventQuery) FirstIDX(ctx context.Context) int {
+func (eq *EventQuery) FirstIDX(ctx context.Context) string {
 	id, err := eq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -134,8 +134,8 @@ func (eq *EventQuery) OnlyX(ctx context.Context) *Event {
 // OnlyID is like Only, but returns the only Event ID in the query.
 // Returns a *NotSingularError when more than one Event ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (eq *EventQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EventQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func (eq *EventQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (eq *EventQuery) OnlyIDX(ctx context.Context) int {
+func (eq *EventQuery) OnlyIDX(ctx context.Context) string {
 	id, err := eq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,8 +177,8 @@ func (eq *EventQuery) AllX(ctx context.Context) []*Event {
 }
 
 // IDs executes the query and returns a list of Event IDs.
-func (eq *EventQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (eq *EventQuery) IDs(ctx context.Context) ([]string, error) {
+	var ids []string
 	if err := eq.Select(event.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (eq *EventQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (eq *EventQuery) IDsX(ctx context.Context) []int {
+func (eq *EventQuery) IDsX(ctx context.Context) []string {
 	ids, err := eq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -253,15 +253,14 @@ func (eq *EventQuery) Clone() *EventQuery {
 // Example:
 //
 //	var v []struct {
-//		Age int `json:"age,omitempty"`
+//		AggregateID string `json:"aggregate_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Event.Query().
-//		GroupBy(event.FieldAge).
+//		GroupBy(event.FieldAggregateID).
 //		Aggregate(do.Count()).
 //		Scan(ctx, &v)
-//
 func (eq *EventQuery) GroupBy(field string, fields ...string) *EventGroupBy {
 	grbuild := &EventGroupBy{config: eq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -282,13 +281,12 @@ func (eq *EventQuery) GroupBy(field string, fields ...string) *EventGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Age int `json:"age,omitempty"`
+//		AggregateID string `json:"aggregate_id,omitempty"`
 //	}
 //
 //	client.Event.Query().
-//		Select(event.FieldAge).
+//		Select(event.FieldAggregateID).
 //		Scan(ctx, &v)
-//
 func (eq *EventQuery) Select(fields ...string) *EventSelect {
 	eq.fields = append(eq.fields, fields...)
 	selbuild := &EventSelect{EventQuery: eq}
@@ -361,7 +359,7 @@ func (eq *EventQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   event.Table,
 			Columns: event.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: event.FieldID,
 			},
 		},

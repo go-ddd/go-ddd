@@ -1,4 +1,4 @@
-package vo
+package do
 
 import (
 	"database/sql/driver"

@@ -10,8 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/event"
-	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/predicate"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/event"
+	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/predicate"
+	"github.com/galaxyobe/go-ddd/pkg/types"
 )
 
 // EventUpdate is the builder for updating Event entities.
@@ -27,28 +28,9 @@ func (eu *EventUpdate) Where(ps ...predicate.Event) *EventUpdate {
 	return eu
 }
 
-// SetAge sets the "age" field.
-func (eu *EventUpdate) SetAge(i int) *EventUpdate {
-	eu.mutation.ResetAge()
-	eu.mutation.SetAge(i)
-	return eu
-}
-
-// AddAge adds i to the "age" field.
-func (eu *EventUpdate) AddAge(i int) *EventUpdate {
-	eu.mutation.AddAge(i)
-	return eu
-}
-
-// SetName sets the "name" field.
-func (eu *EventUpdate) SetName(s string) *EventUpdate {
-	eu.mutation.SetName(s)
-	return eu
-}
-
-// SetNickname sets the "nickname" field.
-func (eu *EventUpdate) SetNickname(s string) *EventUpdate {
-	eu.mutation.SetNickname(s)
+// SetVersion sets the "version" field.
+func (eu *EventUpdate) SetVersion(t types.Version) *EventUpdate {
+	eu.mutation.SetVersion(t)
 	return eu
 }
 
@@ -64,12 +46,18 @@ func (eu *EventUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(eu.hooks) == 0 {
+		if err = eu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = eu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*EventMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = eu.check(); err != nil {
+				return 0, err
 			}
 			eu.mutation = mutation
 			affected, err = eu.sqlSave(ctx)
@@ -111,13 +99,23 @@ func (eu *EventUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (eu *EventUpdate) check() error {
+	if v, ok := eu.mutation.Version(); ok {
+		if err := event.VersionValidator(string(v)); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`do: validator failed for field "Event.version": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   event.Table,
 			Columns: event.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: event.FieldID,
 			},
 		},
@@ -129,32 +127,23 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := eu.mutation.Age(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldAge,
-		})
-	}
-	if value, ok := eu.mutation.AddedAge(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldAge,
-		})
-	}
-	if value, ok := eu.mutation.Name(); ok {
+	if value, ok := eu.mutation.Version(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: event.FieldName,
+			Column: event.FieldVersion,
 		})
 	}
-	if value, ok := eu.mutation.Nickname(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldNickname,
+	if eu.mutation.MetadataCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBytes,
+			Column: event.FieldMetadata,
+		})
+	}
+	if eu.mutation.DataCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBytes,
+			Column: event.FieldData,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
@@ -176,28 +165,9 @@ type EventUpdateOne struct {
 	mutation *EventMutation
 }
 
-// SetAge sets the "age" field.
-func (euo *EventUpdateOne) SetAge(i int) *EventUpdateOne {
-	euo.mutation.ResetAge()
-	euo.mutation.SetAge(i)
-	return euo
-}
-
-// AddAge adds i to the "age" field.
-func (euo *EventUpdateOne) AddAge(i int) *EventUpdateOne {
-	euo.mutation.AddAge(i)
-	return euo
-}
-
-// SetName sets the "name" field.
-func (euo *EventUpdateOne) SetName(s string) *EventUpdateOne {
-	euo.mutation.SetName(s)
-	return euo
-}
-
-// SetNickname sets the "nickname" field.
-func (euo *EventUpdateOne) SetNickname(s string) *EventUpdateOne {
-	euo.mutation.SetNickname(s)
+// SetVersion sets the "version" field.
+func (euo *EventUpdateOne) SetVersion(t types.Version) *EventUpdateOne {
+	euo.mutation.SetVersion(t)
 	return euo
 }
 
@@ -220,12 +190,18 @@ func (euo *EventUpdateOne) Save(ctx context.Context) (*Event, error) {
 		node *Event
 	)
 	if len(euo.hooks) == 0 {
+		if err = euo.check(); err != nil {
+			return nil, err
+		}
 		node, err = euo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*EventMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = euo.check(); err != nil {
+				return nil, err
 			}
 			euo.mutation = mutation
 			node, err = euo.sqlSave(ctx)
@@ -273,13 +249,23 @@ func (euo *EventUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (euo *EventUpdateOne) check() error {
+	if v, ok := euo.mutation.Version(); ok {
+		if err := event.VersionValidator(string(v)); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`do: validator failed for field "Event.version": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   event.Table,
 			Columns: event.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: event.FieldID,
 			},
 		},
@@ -308,32 +294,23 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			}
 		}
 	}
-	if value, ok := euo.mutation.Age(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldAge,
-		})
-	}
-	if value, ok := euo.mutation.AddedAge(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: event.FieldAge,
-		})
-	}
-	if value, ok := euo.mutation.Name(); ok {
+	if value, ok := euo.mutation.Version(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: event.FieldName,
+			Column: event.FieldVersion,
 		})
 	}
-	if value, ok := euo.mutation.Nickname(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldNickname,
+	if euo.mutation.MetadataCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBytes,
+			Column: event.FieldMetadata,
+		})
+	}
+	if euo.mutation.DataCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBytes,
+			Column: event.FieldData,
 		})
 	}
 	_node = &Event{config: euo.config}

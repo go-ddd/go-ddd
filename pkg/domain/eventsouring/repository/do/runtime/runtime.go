@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/do/runtime.go
+// The schema-stitching logic is generated in github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/runtime.go
 
 const (
 	Version = "v0.11.2"                                         // Version of ent codegen.

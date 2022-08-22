@@ -1,4 +1,4 @@
-package vo
+package do
 
 import (
 	"database/sql/driver"
@@ -12,8 +12,8 @@ func (s *StringArray) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
 
-func (s *StringArray) Scan(src any) error {
-	data, ok := src.([]byte)
+func (s *StringArray) Scan(value any) error {
+	data, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("expect []byte")
 	}
