@@ -18,21 +18,22 @@ import (
 type Event struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
-	// AggregateID holds the value of the "aggregate_id" field.
-	AggregateID string `json:"aggregate_id,omitempty"`
-	// Version holds the value of the "version" field.
+	// event id
+	ID types.UUID `json:"id,omitempty"`
+	// aggregate id
+	AggregateID types.UUID `json:"aggregate_id,omitempty"`
+	// organisation id
+	OrgID types.UUID `json:"org_id,omitempty"`
+	// instance id
+	InstanceID types.UUID `json:"instance_id,omitempty"`
+	// aggregate semver version
 	Version types.Version `json:"version,omitempty"`
-	// Creator holds the value of the "creator" field.
-	Creator string `json:"creator,omitempty"`
+	// event creator
+	Creator types.UUID `json:"creator,omitempty"`
 	// event type
 	Type vo.EventType `json:"type,omitempty"`
 	// event aggregate type
 	AggregateType vo.AggregateType `json:"aggregate_type,omitempty"`
-	// organisation id
-	OrgID string `json:"org_id,omitempty"`
-	// instance id
-	InstanceID string `json:"instance_id,omitempty"`
 	// metadata JSON
 	Metadata do.StringMap `json:"metadata,omitempty"`
 	// event data JSON
@@ -45,7 +46,7 @@ type Event struct {
 	PreviousAggregateTypeSequence uint64 `json:"previous_aggregate_type_sequence,omitempty"`
 	// event create service
 	Service string `json:"service,omitempty"`
-	// CreateTime holds the value of the "create_time" field.
+	// create event time
 	CreateTime time.Time `json:"create_time,omitempty"`
 }
 
@@ -60,7 +61,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(do.StringMap)
 		case event.FieldSequence, event.FieldPreviousAggregateSequence, event.FieldPreviousAggregateTypeSequence:
 			values[i] = new(sql.NullInt64)
-		case event.FieldID, event.FieldAggregateID, event.FieldCreator, event.FieldType, event.FieldAggregateType, event.FieldOrgID, event.FieldInstanceID, event.FieldService:
+		case event.FieldID, event.FieldAggregateID, event.FieldOrgID, event.FieldInstanceID, event.FieldCreator, event.FieldType, event.FieldAggregateType, event.FieldService:
 			values[i] = new(sql.NullString)
 		case event.FieldCreateTime:
 			values[i] = new(sql.NullTime)
@@ -85,13 +86,25 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				e.ID = value.String
+				e.ID = types.UUID(value.String)
 			}
 		case event.FieldAggregateID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field aggregate_id", values[i])
 			} else if value.Valid {
-				e.AggregateID = value.String
+				e.AggregateID = types.UUID(value.String)
+			}
+		case event.FieldOrgID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field org_id", values[i])
+			} else if value.Valid {
+				e.OrgID = types.UUID(value.String)
+			}
+		case event.FieldInstanceID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field instance_id", values[i])
+			} else if value.Valid {
+				e.InstanceID = types.UUID(value.String)
 			}
 		case event.FieldVersion:
 			if value, ok := values[i].(*types.Version); !ok {
@@ -103,7 +116,7 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field creator", values[i])
 			} else if value.Valid {
-				e.Creator = value.String
+				e.Creator = types.UUID(value.String)
 			}
 		case event.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -116,18 +129,6 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field aggregate_type", values[i])
 			} else if value.Valid {
 				e.AggregateType = vo.AggregateType(value.String)
-			}
-		case event.FieldOrgID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field org_id", values[i])
-			} else if value.Valid {
-				e.OrgID = value.String
-			}
-		case event.FieldInstanceID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field instance_id", values[i])
-			} else if value.Valid {
-				e.InstanceID = value.String
 			}
 		case event.FieldMetadata:
 			if value, ok := values[i].(*do.StringMap); !ok {
@@ -200,25 +201,25 @@ func (e *Event) String() string {
 	builder.WriteString("Event(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", e.ID))
 	builder.WriteString("aggregate_id=")
-	builder.WriteString(e.AggregateID)
+	builder.WriteString(fmt.Sprintf("%v", e.AggregateID))
+	builder.WriteString(", ")
+	builder.WriteString("org_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.OrgID))
+	builder.WriteString(", ")
+	builder.WriteString("instance_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.InstanceID))
 	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(fmt.Sprintf("%v", e.Version))
 	builder.WriteString(", ")
 	builder.WriteString("creator=")
-	builder.WriteString(e.Creator)
+	builder.WriteString(fmt.Sprintf("%v", e.Creator))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", e.Type))
 	builder.WriteString(", ")
 	builder.WriteString("aggregate_type=")
 	builder.WriteString(fmt.Sprintf("%v", e.AggregateType))
-	builder.WriteString(", ")
-	builder.WriteString("org_id=")
-	builder.WriteString(e.OrgID)
-	builder.WriteString(", ")
-	builder.WriteString("instance_id=")
-	builder.WriteString(e.InstanceID)
 	builder.WriteString(", ")
 	builder.WriteString("metadata=")
 	builder.WriteString(fmt.Sprintf("%v", e.Metadata))

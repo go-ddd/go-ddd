@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/migrate"
+	"github.com/galaxyobe/go-ddd/pkg/types"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/repository/do/event"
 
@@ -162,7 +163,7 @@ func (c *EventClient) UpdateOne(e *Event) *EventUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *EventClient) UpdateOneID(id string) *EventUpdateOne {
+func (c *EventClient) UpdateOneID(id types.UUID) *EventUpdateOne {
 	mutation := newEventMutation(c.config, OpUpdateOne, withEventID(id))
 	return &EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -179,7 +180,7 @@ func (c *EventClient) DeleteOne(e *Event) *EventDeleteOne {
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *EventClient) DeleteOneID(id string) *EventDeleteOne {
+func (c *EventClient) DeleteOneID(id types.UUID) *EventDeleteOne {
 	builder := c.Delete().Where(event.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -194,12 +195,12 @@ func (c *EventClient) Query() *EventQuery {
 }
 
 // Get returns a Event entity by its id.
-func (c *EventClient) Get(ctx context.Context, id string) (*Event, error) {
+func (c *EventClient) Get(ctx context.Context, id types.UUID) (*Event, error) {
 	return c.Query().Where(event.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *EventClient) GetX(ctx context.Context, id string) *Event {
+func (c *EventClient) GetX(ctx context.Context, id types.UUID) *Event {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

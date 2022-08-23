@@ -9,23 +9,23 @@ import (
 // Event represents all information about a manipulation of an aggregate.
 type Event struct {
 	// ID is a generated uuid for this event.
-	ID vo.GUID
+	ID vo.UUID
 	// Type describes the cause of the event. (e.g. user.added)
 	// it should always be in past-form
 	Type vo.EventType
 	// AggregateID id is the unique identifier of the aggregate
 	// the client must generate it by it's own.
-	AggregateID vo.GUID
+	AggregateID vo.UUID
 	// AggregateType describes the meaning of the aggregate for this event
 	// it could an object like user.
 	AggregateType vo.AggregateType
 	// OrgID is the organisation which owns this aggregate
 	// an aggregate can only be managed by one organisation
 	// use the ID of the org.
-	OrgID string
+	OrgID vo.UUID
 	// InstanceID is the instance where this event belongs to
 	// use the ID of the instance.
-	InstanceID string
+	InstanceID vo.UUID
 	// Version describes the definition of the aggregate at a certain point in time
 	// it's used in read models to reduce the events in the correct definition.
 	Version vo.Version
@@ -48,7 +48,7 @@ type Event struct {
 	// Creator should be a unique identifier for the user which created the event,
 	// it's meant for maintainability,
 	// It's recommend to use the aggregate id of the user.
-	Creator vo.GUID
+	Creator vo.UUID
 	// CreateTime is the time the event is created
 	// it's used for human readability.
 	// Don't use it for event ordering,
@@ -56,7 +56,7 @@ type Event struct {
 	CreateTime time.Time
 }
 
-func (e Event) GetID() vo.GUID {
+func (e Event) GetID() vo.UUID {
 	return e.ID
 }
 
@@ -98,7 +98,7 @@ func (e Event) GetService() string {
 	return e.Service
 }
 
-func (e Event) GetCreator() vo.GUID {
+func (e Event) GetCreator() vo.UUID {
 	return e.Creator
 }
 

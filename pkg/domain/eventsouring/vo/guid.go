@@ -4,4 +4,8 @@ import (
 	"github.com/galaxyobe/go-ddd/pkg/types"
 )
 
-type GUID = types.GUID
+type (
+	UUID    = types.UUID
+	IntID   = types.IntID
+	Int32ID = types.Int32ID
+)

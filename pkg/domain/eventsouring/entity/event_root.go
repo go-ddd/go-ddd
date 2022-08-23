@@ -17,7 +17,7 @@ type EventRoot struct {
 	PreviousAggregateSequence     uint64       `json:"-"`
 	PreviousAggregateTypeSequence uint64       `json:"-"`
 	Service                       string       `json:"-"`
-	Creator                       vo.GUID      `json:"-"`
+	Creator                       vo.UUID      `json:"-"`
 	CreateTime                    time.Time    `json:"-"`
 }
 
@@ -53,7 +53,7 @@ func (e EventRoot) GetService() string {
 	return e.Service
 }
 
-func (e EventRoot) GetCreator() vo.GUID {
+func (e EventRoot) GetCreator() vo.UUID {
 	return e.Creator
 }
 

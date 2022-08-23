@@ -1,9 +1,14 @@
 package schema
 
+import (
+	"entgo.io/ent/schema"
+)
+
 type Field struct {
-	Name       string
-	StorageKey string
-	Comment    string
+	Name        string
+	StorageKey  string
+	Comment     string
+	Annotations []schema.Annotation
 }
 
 type FieldOption func(field *Field)
@@ -29,5 +34,11 @@ func NewField(opts ...FieldOption) Field {
 func WithComment(comment string) FieldOption {
 	return func(field *Field) {
 		field.Comment = comment
+	}
+}
+
+func WithAnnotations(annotations ...schema.Annotation) FieldOption {
+	return func(field *Field) {
+		field.Annotations = annotations
 	}
 }

@@ -13,6 +13,10 @@ const (
 	FieldID = "id"
 	// FieldAggregateID holds the string denoting the aggregate_id field in the database.
 	FieldAggregateID = "aggregate_id"
+	// FieldOrgID holds the string denoting the org_id field in the database.
+	FieldOrgID = "org_id"
+	// FieldInstanceID holds the string denoting the instance_id field in the database.
+	FieldInstanceID = "instance_id"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
 	// FieldCreator holds the string denoting the creator field in the database.
@@ -21,10 +25,6 @@ const (
 	FieldType = "type"
 	// FieldAggregateType holds the string denoting the aggregate_type field in the database.
 	FieldAggregateType = "aggregate_type"
-	// FieldOrgID holds the string denoting the org_id field in the database.
-	FieldOrgID = "org_id"
-	// FieldInstanceID holds the string denoting the instance_id field in the database.
-	FieldInstanceID = "instance_id"
 	// FieldMetadata holds the string denoting the metadata field in the database.
 	FieldMetadata = "metadata"
 	// FieldData holds the string denoting the data field in the database.
@@ -47,12 +47,12 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldAggregateID,
+	FieldOrgID,
+	FieldInstanceID,
 	FieldVersion,
 	FieldCreator,
 	FieldType,
 	FieldAggregateType,
-	FieldOrgID,
-	FieldInstanceID,
 	FieldMetadata,
 	FieldData,
 	FieldSequence,
@@ -75,6 +75,10 @@ func ValidColumn(column string) bool {
 var (
 	// AggregateIDValidator is a validator for the "aggregate_id" field. It is called by the builders before save.
 	AggregateIDValidator func(string) error
+	// OrgIDValidator is a validator for the "org_id" field. It is called by the builders before save.
+	OrgIDValidator func(string) error
+	// InstanceIDValidator is a validator for the "instance_id" field. It is called by the builders before save.
+	InstanceIDValidator func(string) error
 	// VersionValidator is a validator for the "version" field. It is called by the builders before save.
 	VersionValidator func(string) error
 	// CreatorValidator is a validator for the "creator" field. It is called by the builders before save.
@@ -83,10 +87,6 @@ var (
 	TypeValidator func(string) error
 	// AggregateTypeValidator is a validator for the "aggregate_type" field. It is called by the builders before save.
 	AggregateTypeValidator func(string) error
-	// OrgIDValidator is a validator for the "org_id" field. It is called by the builders before save.
-	OrgIDValidator func(string) error
-	// InstanceIDValidator is a validator for the "instance_id" field. It is called by the builders before save.
-	InstanceIDValidator func(string) error
 	// ServiceValidator is a validator for the "service" field. It is called by the builders before save.
 	ServiceValidator func(string) error
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.

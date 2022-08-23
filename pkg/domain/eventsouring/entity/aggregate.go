@@ -4,25 +4,24 @@ import (
 	"errors"
 
 	"github.com/galaxyobe/go-ddd/pkg/domain/eventsouring/vo"
-	"github.com/galaxyobe/go-ddd/pkg/infrastructure/tools"
 )
 
 // Aggregate is the basic implementation of Aggregater.
 type Aggregate struct {
 	// ID is the unique identifier of this aggregate.
-	ID vo.GUID `json:"-"`
+	ID vo.UUID `json:"-"`
 	// Type is the name of the aggregate.
 	Type vo.AggregateType `json:"-"`
 	// OrgID is the organization belongs to.
-	OrgID string `json:"-"`
+	OrgID vo.UUID `json:"-"`
 	// InstanceID is the instance this aggregate belongs to.
-	InstanceID string `json:"-"`
+	InstanceID vo.UUID `json:"-"`
 	// Version is the semver this aggregate represents.
 	Version vo.Version `json:"-"`
 }
 
 func (a Aggregate) Validate() error {
-	if tools.IsGUIDNull(a.ID) {
+	if a.ID == "" {
 		return errors.New("aggregate id must not be empty")
 	}
 	if a.Type == "" {
@@ -43,9 +42,9 @@ func (a Aggregate) IsAggregateTypes(types ...vo.AggregateType) bool {
 	return false
 }
 
-func (a Aggregate) IsAggregateIDs(ids ...vo.GUID) bool {
+func (a Aggregate) IsAggregateIDs(ids ...vo.UUID) bool {
 	for _, id := range ids {
-		if a.ID.Equaled(id) {
+		if a.ID == id {
 			return true
 		}
 	}
@@ -57,7 +56,7 @@ type aggregateOpt func(*Aggregate)
 // NewAggregate is the default constructor of an aggregate
 // opts overwrite values calculated by given parameters.
 func NewAggregate(
-	id vo.GUID,
+	id vo.UUID,
 	typ vo.AggregateType,
 	version vo.Version,
 	opts ...aggregateOpt,
@@ -76,14 +75,14 @@ func NewAggregate(
 }
 
 // WithOrgID the org ID of the aggregate option.
-func WithOrgID(orgID string) aggregateOpt {
+func WithOrgID(orgID vo.UUID) aggregateOpt {
 	return func(aggregate *Aggregate) {
 		aggregate.OrgID = orgID
 	}
 }
 
 // WithInstanceID the instance ID of the aggregate option.
-func WithInstanceID(instanceID string) aggregateOpt {
+func WithInstanceID(instanceID vo.UUID) aggregateOpt {
 	return func(aggregate *Aggregate) {
 		aggregate.InstanceID = instanceID
 	}

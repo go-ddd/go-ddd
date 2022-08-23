@@ -24,8 +24,20 @@ type EventCreate struct {
 }
 
 // SetAggregateID sets the "aggregate_id" field.
-func (ec *EventCreate) SetAggregateID(s string) *EventCreate {
-	ec.mutation.SetAggregateID(s)
+func (ec *EventCreate) SetAggregateID(t types.UUID) *EventCreate {
+	ec.mutation.SetAggregateID(t)
+	return ec
+}
+
+// SetOrgID sets the "org_id" field.
+func (ec *EventCreate) SetOrgID(t types.UUID) *EventCreate {
+	ec.mutation.SetOrgID(t)
+	return ec
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (ec *EventCreate) SetInstanceID(t types.UUID) *EventCreate {
+	ec.mutation.SetInstanceID(t)
 	return ec
 }
 
@@ -36,8 +48,8 @@ func (ec *EventCreate) SetVersion(t types.Version) *EventCreate {
 }
 
 // SetCreator sets the "creator" field.
-func (ec *EventCreate) SetCreator(s string) *EventCreate {
-	ec.mutation.SetCreator(s)
+func (ec *EventCreate) SetCreator(t types.UUID) *EventCreate {
+	ec.mutation.SetCreator(t)
 	return ec
 }
 
@@ -50,18 +62,6 @@ func (ec *EventCreate) SetType(vt vo.EventType) *EventCreate {
 // SetAggregateType sets the "aggregate_type" field.
 func (ec *EventCreate) SetAggregateType(vt vo.AggregateType) *EventCreate {
 	ec.mutation.SetAggregateType(vt)
-	return ec
-}
-
-// SetOrgID sets the "org_id" field.
-func (ec *EventCreate) SetOrgID(s string) *EventCreate {
-	ec.mutation.SetOrgID(s)
-	return ec
-}
-
-// SetInstanceID sets the "instance_id" field.
-func (ec *EventCreate) SetInstanceID(s string) *EventCreate {
-	ec.mutation.SetInstanceID(s)
 	return ec
 }
 
@@ -116,8 +116,8 @@ func (ec *EventCreate) SetNillableCreateTime(t *time.Time) *EventCreate {
 }
 
 // SetID sets the "id" field.
-func (ec *EventCreate) SetID(s string) *EventCreate {
-	ec.mutation.SetID(s)
+func (ec *EventCreate) SetID(t types.UUID) *EventCreate {
+	ec.mutation.SetID(t)
 	return ec
 }
 
@@ -210,8 +210,24 @@ func (ec *EventCreate) check() error {
 		return &ValidationError{Name: "aggregate_id", err: errors.New(`do: missing required field "Event.aggregate_id"`)}
 	}
 	if v, ok := ec.mutation.AggregateID(); ok {
-		if err := event.AggregateIDValidator(v); err != nil {
+		if err := event.AggregateIDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "aggregate_id", err: fmt.Errorf(`do: validator failed for field "Event.aggregate_id": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.OrgID(); !ok {
+		return &ValidationError{Name: "org_id", err: errors.New(`do: missing required field "Event.org_id"`)}
+	}
+	if v, ok := ec.mutation.OrgID(); ok {
+		if err := event.OrgIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "org_id", err: fmt.Errorf(`do: validator failed for field "Event.org_id": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.InstanceID(); !ok {
+		return &ValidationError{Name: "instance_id", err: errors.New(`do: missing required field "Event.instance_id"`)}
+	}
+	if v, ok := ec.mutation.InstanceID(); ok {
+		if err := event.InstanceIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "instance_id", err: fmt.Errorf(`do: validator failed for field "Event.instance_id": %w`, err)}
 		}
 	}
 	if _, ok := ec.mutation.Version(); !ok {
@@ -226,7 +242,7 @@ func (ec *EventCreate) check() error {
 		return &ValidationError{Name: "creator", err: errors.New(`do: missing required field "Event.creator"`)}
 	}
 	if v, ok := ec.mutation.Creator(); ok {
-		if err := event.CreatorValidator(v); err != nil {
+		if err := event.CreatorValidator(string(v)); err != nil {
 			return &ValidationError{Name: "creator", err: fmt.Errorf(`do: validator failed for field "Event.creator": %w`, err)}
 		}
 	}
@@ -244,22 +260,6 @@ func (ec *EventCreate) check() error {
 	if v, ok := ec.mutation.AggregateType(); ok {
 		if err := event.AggregateTypeValidator(string(v)); err != nil {
 			return &ValidationError{Name: "aggregate_type", err: fmt.Errorf(`do: validator failed for field "Event.aggregate_type": %w`, err)}
-		}
-	}
-	if _, ok := ec.mutation.OrgID(); !ok {
-		return &ValidationError{Name: "org_id", err: errors.New(`do: missing required field "Event.org_id"`)}
-	}
-	if v, ok := ec.mutation.OrgID(); ok {
-		if err := event.OrgIDValidator(v); err != nil {
-			return &ValidationError{Name: "org_id", err: fmt.Errorf(`do: validator failed for field "Event.org_id": %w`, err)}
-		}
-	}
-	if _, ok := ec.mutation.InstanceID(); !ok {
-		return &ValidationError{Name: "instance_id", err: errors.New(`do: missing required field "Event.instance_id"`)}
-	}
-	if v, ok := ec.mutation.InstanceID(); ok {
-		if err := event.InstanceIDValidator(v); err != nil {
-			return &ValidationError{Name: "instance_id", err: fmt.Errorf(`do: validator failed for field "Event.instance_id": %w`, err)}
 		}
 	}
 	if _, ok := ec.mutation.Sequence(); !ok {
@@ -283,7 +283,7 @@ func (ec *EventCreate) check() error {
 		return &ValidationError{Name: "create_time", err: errors.New(`do: missing required field "Event.create_time"`)}
 	}
 	if v, ok := ec.mutation.ID(); ok {
-		if err := event.IDValidator(v); err != nil {
+		if err := event.IDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`do: validator failed for field "Event.id": %w`, err)}
 		}
 	}
@@ -299,7 +299,7 @@ func (ec *EventCreate) sqlSave(ctx context.Context) (*Event, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
+		if id, ok := _spec.ID.Value.(types.UUID); ok {
 			_node.ID = id
 		} else {
 			return nil, fmt.Errorf("unexpected Event.ID type: %T", _spec.ID.Value)
@@ -330,6 +330,22 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Column: event.FieldAggregateID,
 		})
 		_node.AggregateID = value
+	}
+	if value, ok := ec.mutation.OrgID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldOrgID,
+		})
+		_node.OrgID = value
+	}
+	if value, ok := ec.mutation.InstanceID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldInstanceID,
+		})
+		_node.InstanceID = value
 	}
 	if value, ok := ec.mutation.Version(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -362,22 +378,6 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Column: event.FieldAggregateType,
 		})
 		_node.AggregateType = value
-	}
-	if value, ok := ec.mutation.OrgID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldOrgID,
-		})
-		_node.OrgID = value
-	}
-	if value, ok := ec.mutation.InstanceID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldInstanceID,
-		})
-		_node.InstanceID = value
 	}
 	if value, ok := ec.mutation.Metadata(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

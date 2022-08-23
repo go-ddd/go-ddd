@@ -35,14 +35,14 @@ type EventMutation struct {
 	config
 	op                                  Op
 	typ                                 string
-	id                                  *string
-	aggregate_id                        *string
+	id                                  *types.UUID
+	aggregate_id                        *types.UUID
+	org_id                              *types.UUID
+	instance_id                         *types.UUID
 	version                             *types.Version
-	creator                             *string
+	creator                             *types.UUID
 	_type                               *vo.EventType
 	aggregate_type                      *vo.AggregateType
-	org_id                              *string
-	instance_id                         *string
 	metadata                            *do.StringMap
 	data                                *[]byte
 	sequence                            *uint64
@@ -79,7 +79,7 @@ func newEventMutation(c config, op Op, opts ...eventOption) *EventMutation {
 }
 
 // withEventID sets the ID field of the mutation.
-func withEventID(id string) eventOption {
+func withEventID(id types.UUID) eventOption {
 	return func(m *EventMutation) {
 		var (
 			err   error
@@ -131,13 +131,13 @@ func (m EventMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Event entities.
-func (m *EventMutation) SetID(id string) {
+func (m *EventMutation) SetID(id types.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *EventMutation) ID() (id string, exists bool) {
+func (m *EventMutation) ID() (id types.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -148,12 +148,12 @@ func (m *EventMutation) ID() (id string, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *EventMutation) IDs(ctx context.Context) ([]string, error) {
+func (m *EventMutation) IDs(ctx context.Context) ([]types.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []string{id}, nil
+			return []types.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -164,12 +164,12 @@ func (m *EventMutation) IDs(ctx context.Context) ([]string, error) {
 }
 
 // SetAggregateID sets the "aggregate_id" field.
-func (m *EventMutation) SetAggregateID(s string) {
-	m.aggregate_id = &s
+func (m *EventMutation) SetAggregateID(t types.UUID) {
+	m.aggregate_id = &t
 }
 
 // AggregateID returns the value of the "aggregate_id" field in the mutation.
-func (m *EventMutation) AggregateID() (r string, exists bool) {
+func (m *EventMutation) AggregateID() (r types.UUID, exists bool) {
 	v := m.aggregate_id
 	if v == nil {
 		return
@@ -180,7 +180,7 @@ func (m *EventMutation) AggregateID() (r string, exists bool) {
 // OldAggregateID returns the old "aggregate_id" field's value of the Event entity.
 // If the Event object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldAggregateID(ctx context.Context) (v string, err error) {
+func (m *EventMutation) OldAggregateID(ctx context.Context) (v types.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAggregateID is only allowed on UpdateOne operations")
 	}
@@ -197,6 +197,78 @@ func (m *EventMutation) OldAggregateID(ctx context.Context) (v string, err error
 // ResetAggregateID resets all changes to the "aggregate_id" field.
 func (m *EventMutation) ResetAggregateID() {
 	m.aggregate_id = nil
+}
+
+// SetOrgID sets the "org_id" field.
+func (m *EventMutation) SetOrgID(t types.UUID) {
+	m.org_id = &t
+}
+
+// OrgID returns the value of the "org_id" field in the mutation.
+func (m *EventMutation) OrgID() (r types.UUID, exists bool) {
+	v := m.org_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrgID returns the old "org_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldOrgID(ctx context.Context) (v types.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrgID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrgID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrgID: %w", err)
+	}
+	return oldValue.OrgID, nil
+}
+
+// ResetOrgID resets all changes to the "org_id" field.
+func (m *EventMutation) ResetOrgID() {
+	m.org_id = nil
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (m *EventMutation) SetInstanceID(t types.UUID) {
+	m.instance_id = &t
+}
+
+// InstanceID returns the value of the "instance_id" field in the mutation.
+func (m *EventMutation) InstanceID() (r types.UUID, exists bool) {
+	v := m.instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstanceID returns the old "instance_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldInstanceID(ctx context.Context) (v types.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
+	}
+	return oldValue.InstanceID, nil
+}
+
+// ResetInstanceID resets all changes to the "instance_id" field.
+func (m *EventMutation) ResetInstanceID() {
+	m.instance_id = nil
 }
 
 // SetVersion sets the "version" field.
@@ -236,12 +308,12 @@ func (m *EventMutation) ResetVersion() {
 }
 
 // SetCreator sets the "creator" field.
-func (m *EventMutation) SetCreator(s string) {
-	m.creator = &s
+func (m *EventMutation) SetCreator(t types.UUID) {
+	m.creator = &t
 }
 
 // Creator returns the value of the "creator" field in the mutation.
-func (m *EventMutation) Creator() (r string, exists bool) {
+func (m *EventMutation) Creator() (r types.UUID, exists bool) {
 	v := m.creator
 	if v == nil {
 		return
@@ -252,7 +324,7 @@ func (m *EventMutation) Creator() (r string, exists bool) {
 // OldCreator returns the old "creator" field's value of the Event entity.
 // If the Event object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldCreator(ctx context.Context) (v string, err error) {
+func (m *EventMutation) OldCreator(ctx context.Context) (v types.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
 	}
@@ -341,78 +413,6 @@ func (m *EventMutation) OldAggregateType(ctx context.Context) (v vo.AggregateTyp
 // ResetAggregateType resets all changes to the "aggregate_type" field.
 func (m *EventMutation) ResetAggregateType() {
 	m.aggregate_type = nil
-}
-
-// SetOrgID sets the "org_id" field.
-func (m *EventMutation) SetOrgID(s string) {
-	m.org_id = &s
-}
-
-// OrgID returns the value of the "org_id" field in the mutation.
-func (m *EventMutation) OrgID() (r string, exists bool) {
-	v := m.org_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldOrgID returns the old "org_id" field's value of the Event entity.
-// If the Event object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldOrgID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOrgID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOrgID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOrgID: %w", err)
-	}
-	return oldValue.OrgID, nil
-}
-
-// ResetOrgID resets all changes to the "org_id" field.
-func (m *EventMutation) ResetOrgID() {
-	m.org_id = nil
-}
-
-// SetInstanceID sets the "instance_id" field.
-func (m *EventMutation) SetInstanceID(s string) {
-	m.instance_id = &s
-}
-
-// InstanceID returns the value of the "instance_id" field in the mutation.
-func (m *EventMutation) InstanceID() (r string, exists bool) {
-	v := m.instance_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldInstanceID returns the old "instance_id" field's value of the Event entity.
-// If the Event object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldInstanceID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldInstanceID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
-	}
-	return oldValue.InstanceID, nil
-}
-
-// ResetInstanceID resets all changes to the "instance_id" field.
-func (m *EventMutation) ResetInstanceID() {
-	m.instance_id = nil
 }
 
 // SetMetadata sets the "metadata" field.
@@ -776,6 +776,12 @@ func (m *EventMutation) Fields() []string {
 	if m.aggregate_id != nil {
 		fields = append(fields, event.FieldAggregateID)
 	}
+	if m.org_id != nil {
+		fields = append(fields, event.FieldOrgID)
+	}
+	if m.instance_id != nil {
+		fields = append(fields, event.FieldInstanceID)
+	}
 	if m.version != nil {
 		fields = append(fields, event.FieldVersion)
 	}
@@ -787,12 +793,6 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.aggregate_type != nil {
 		fields = append(fields, event.FieldAggregateType)
-	}
-	if m.org_id != nil {
-		fields = append(fields, event.FieldOrgID)
-	}
-	if m.instance_id != nil {
-		fields = append(fields, event.FieldInstanceID)
 	}
 	if m.metadata != nil {
 		fields = append(fields, event.FieldMetadata)
@@ -825,6 +825,10 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case event.FieldAggregateID:
 		return m.AggregateID()
+	case event.FieldOrgID:
+		return m.OrgID()
+	case event.FieldInstanceID:
+		return m.InstanceID()
 	case event.FieldVersion:
 		return m.Version()
 	case event.FieldCreator:
@@ -833,10 +837,6 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case event.FieldAggregateType:
 		return m.AggregateType()
-	case event.FieldOrgID:
-		return m.OrgID()
-	case event.FieldInstanceID:
-		return m.InstanceID()
 	case event.FieldMetadata:
 		return m.Metadata()
 	case event.FieldData:
@@ -862,6 +862,10 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case event.FieldAggregateID:
 		return m.OldAggregateID(ctx)
+	case event.FieldOrgID:
+		return m.OldOrgID(ctx)
+	case event.FieldInstanceID:
+		return m.OldInstanceID(ctx)
 	case event.FieldVersion:
 		return m.OldVersion(ctx)
 	case event.FieldCreator:
@@ -870,10 +874,6 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldType(ctx)
 	case event.FieldAggregateType:
 		return m.OldAggregateType(ctx)
-	case event.FieldOrgID:
-		return m.OldOrgID(ctx)
-	case event.FieldInstanceID:
-		return m.OldInstanceID(ctx)
 	case event.FieldMetadata:
 		return m.OldMetadata(ctx)
 	case event.FieldData:
@@ -898,11 +898,25 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 func (m *EventMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case event.FieldAggregateID:
-		v, ok := value.(string)
+		v, ok := value.(types.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAggregateID(v)
+		return nil
+	case event.FieldOrgID:
+		v, ok := value.(types.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrgID(v)
+		return nil
+	case event.FieldInstanceID:
+		v, ok := value.(types.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstanceID(v)
 		return nil
 	case event.FieldVersion:
 		v, ok := value.(types.Version)
@@ -912,7 +926,7 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		m.SetVersion(v)
 		return nil
 	case event.FieldCreator:
-		v, ok := value.(string)
+		v, ok := value.(types.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -931,20 +945,6 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAggregateType(v)
-		return nil
-	case event.FieldOrgID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetOrgID(v)
-		return nil
-	case event.FieldInstanceID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetInstanceID(v)
 		return nil
 	case event.FieldMetadata:
 		v, ok := value.(do.StringMap)
@@ -1101,6 +1101,12 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldAggregateID:
 		m.ResetAggregateID()
 		return nil
+	case event.FieldOrgID:
+		m.ResetOrgID()
+		return nil
+	case event.FieldInstanceID:
+		m.ResetInstanceID()
+		return nil
 	case event.FieldVersion:
 		m.ResetVersion()
 		return nil
@@ -1112,12 +1118,6 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldAggregateType:
 		m.ResetAggregateType()
-		return nil
-	case event.FieldOrgID:
-		m.ResetOrgID()
-		return nil
-	case event.FieldInstanceID:
-		m.ResetInstanceID()
 		return nil
 	case event.FieldMetadata:
 		m.ResetMetadata()

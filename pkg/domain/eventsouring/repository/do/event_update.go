@@ -28,9 +28,33 @@ func (eu *EventUpdate) Where(ps ...predicate.Event) *EventUpdate {
 	return eu
 }
 
+// SetAggregateID sets the "aggregate_id" field.
+func (eu *EventUpdate) SetAggregateID(t types.UUID) *EventUpdate {
+	eu.mutation.SetAggregateID(t)
+	return eu
+}
+
+// SetOrgID sets the "org_id" field.
+func (eu *EventUpdate) SetOrgID(t types.UUID) *EventUpdate {
+	eu.mutation.SetOrgID(t)
+	return eu
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (eu *EventUpdate) SetInstanceID(t types.UUID) *EventUpdate {
+	eu.mutation.SetInstanceID(t)
+	return eu
+}
+
 // SetVersion sets the "version" field.
 func (eu *EventUpdate) SetVersion(t types.Version) *EventUpdate {
 	eu.mutation.SetVersion(t)
+	return eu
+}
+
+// SetCreator sets the "creator" field.
+func (eu *EventUpdate) SetCreator(t types.UUID) *EventUpdate {
+	eu.mutation.SetCreator(t)
 	return eu
 }
 
@@ -101,9 +125,29 @@ func (eu *EventUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EventUpdate) check() error {
+	if v, ok := eu.mutation.AggregateID(); ok {
+		if err := event.AggregateIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "aggregate_id", err: fmt.Errorf(`do: validator failed for field "Event.aggregate_id": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.OrgID(); ok {
+		if err := event.OrgIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "org_id", err: fmt.Errorf(`do: validator failed for field "Event.org_id": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.InstanceID(); ok {
+		if err := event.InstanceIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "instance_id", err: fmt.Errorf(`do: validator failed for field "Event.instance_id": %w`, err)}
+		}
+	}
 	if v, ok := eu.mutation.Version(); ok {
 		if err := event.VersionValidator(string(v)); err != nil {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`do: validator failed for field "Event.version": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.Creator(); ok {
+		if err := event.CreatorValidator(string(v)); err != nil {
+			return &ValidationError{Name: "creator", err: fmt.Errorf(`do: validator failed for field "Event.creator": %w`, err)}
 		}
 	}
 	return nil
@@ -127,11 +171,39 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := eu.mutation.AggregateID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldAggregateID,
+		})
+	}
+	if value, ok := eu.mutation.OrgID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldOrgID,
+		})
+	}
+	if value, ok := eu.mutation.InstanceID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldInstanceID,
+		})
+	}
 	if value, ok := eu.mutation.Version(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: event.FieldVersion,
+		})
+	}
+	if value, ok := eu.mutation.Creator(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldCreator,
 		})
 	}
 	if eu.mutation.MetadataCleared() {
@@ -165,9 +237,33 @@ type EventUpdateOne struct {
 	mutation *EventMutation
 }
 
+// SetAggregateID sets the "aggregate_id" field.
+func (euo *EventUpdateOne) SetAggregateID(t types.UUID) *EventUpdateOne {
+	euo.mutation.SetAggregateID(t)
+	return euo
+}
+
+// SetOrgID sets the "org_id" field.
+func (euo *EventUpdateOne) SetOrgID(t types.UUID) *EventUpdateOne {
+	euo.mutation.SetOrgID(t)
+	return euo
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (euo *EventUpdateOne) SetInstanceID(t types.UUID) *EventUpdateOne {
+	euo.mutation.SetInstanceID(t)
+	return euo
+}
+
 // SetVersion sets the "version" field.
 func (euo *EventUpdateOne) SetVersion(t types.Version) *EventUpdateOne {
 	euo.mutation.SetVersion(t)
+	return euo
+}
+
+// SetCreator sets the "creator" field.
+func (euo *EventUpdateOne) SetCreator(t types.UUID) *EventUpdateOne {
+	euo.mutation.SetCreator(t)
 	return euo
 }
 
@@ -251,9 +347,29 @@ func (euo *EventUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EventUpdateOne) check() error {
+	if v, ok := euo.mutation.AggregateID(); ok {
+		if err := event.AggregateIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "aggregate_id", err: fmt.Errorf(`do: validator failed for field "Event.aggregate_id": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.OrgID(); ok {
+		if err := event.OrgIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "org_id", err: fmt.Errorf(`do: validator failed for field "Event.org_id": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.InstanceID(); ok {
+		if err := event.InstanceIDValidator(string(v)); err != nil {
+			return &ValidationError{Name: "instance_id", err: fmt.Errorf(`do: validator failed for field "Event.instance_id": %w`, err)}
+		}
+	}
 	if v, ok := euo.mutation.Version(); ok {
 		if err := event.VersionValidator(string(v)); err != nil {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`do: validator failed for field "Event.version": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.Creator(); ok {
+		if err := event.CreatorValidator(string(v)); err != nil {
+			return &ValidationError{Name: "creator", err: fmt.Errorf(`do: validator failed for field "Event.creator": %w`, err)}
 		}
 	}
 	return nil
@@ -294,11 +410,39 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			}
 		}
 	}
+	if value, ok := euo.mutation.AggregateID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldAggregateID,
+		})
+	}
+	if value, ok := euo.mutation.OrgID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldOrgID,
+		})
+	}
+	if value, ok := euo.mutation.InstanceID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldInstanceID,
+		})
+	}
 	if value, ok := euo.mutation.Version(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: event.FieldVersion,
+		})
+	}
+	if value, ok := euo.mutation.Creator(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: event.FieldCreator,
 		})
 	}
 	if euo.mutation.MetadataCleared() {

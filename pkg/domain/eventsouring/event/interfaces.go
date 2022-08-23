@@ -20,7 +20,7 @@ type ICommand interface {
 	// GetService return the service which pushed the event.
 	GetService() string
 	// GetCreator return the user who pushed the event.
-	GetCreator() vo.GUID
+	GetCreator() vo.UUID
 	// GetUniqueConstraints return command unique constraints.
 	GetUniqueConstraints() []*vo.UniqueConstraint
 	// Validate validate event.
@@ -32,7 +32,7 @@ type ICommand interface {
 // IEvent is a domain event describing a change that has happened to an aggregate.
 type IEvent interface {
 	// GetID return a generated uuid for this event
-	GetID() vo.GUID
+	GetID() vo.UUID
 	// GetType returns the type of the event.
 	GetType() vo.EventType
 	// GetAggregate returns the aggregate.
@@ -50,7 +50,7 @@ type IEvent interface {
 	// GetService return the service which pushed the event.
 	GetService() string
 	// GetCreator return the user who pushed the event.
-	GetCreator() vo.GUID
+	GetCreator() vo.UUID
 	// GetCreateTime return when the event was created.
 	GetCreateTime() time.Time
 	// String A string representation of the event.
