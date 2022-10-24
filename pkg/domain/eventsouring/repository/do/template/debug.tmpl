@@ -1,0 +1,20 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "debug" }}
+    {{/* Add the base header for the generated file */}}
+    {{ $pkg := base $.Config.Package }}
+    {{ template "header" $ }}
+
+
+    {{ range $n := $.Nodes }}
+        {{ $client := print $n.Name "Client" }}
+        // Debug is enable debug mode.
+        func (c *{{ $client }}) Debug() *{{ $client }} {
+        if c.debug {
+        return c
+        }
+        cfg := config{driver: dialect.Debug(c.driver, c.log), debug: true, log: c.log, hooks: c.hooks}
+        return &{{ $client }}{config: cfg}
+        }
+    {{ end }}
+{{ end }}

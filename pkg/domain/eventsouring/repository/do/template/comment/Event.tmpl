@@ -1,0 +1,20 @@
+{{/* gotype: entgo.io/ent/entc/gen.Type */}}
+
+
+{{/* A template for model comment. */}}
+{{- define "model/comment/additional/getter" }}
+    {{- if eq $.Name "Event" }}
+        // +gen:getter=true
+    {{- else if eq $.Name "Event" }}
+        // +gen:getter=true
+    {{- end }}
+{{- end }}
+
+{{/* A template for model comment. */}}
+{{- define "model/comment/additional/setter" }}
+    {{- if eq $.Name "Event" }}
+        // +gen:setter=true
+    {{- else if eq $.Name "Event" }}
+        // +gen:setter=true
+    {{- end }}
+{{- end }}

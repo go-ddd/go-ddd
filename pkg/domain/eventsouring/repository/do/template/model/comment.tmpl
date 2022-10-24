@@ -1,0 +1,24 @@
+{{/* gotype: entgo.io/ent/entc/gen.Type */}}
+
+
+{{/* A template for setting the field comment. */}}
+{{- define "model/fieldcomment" }}
+    {{- if $.Comment }}
+        {{- range $line := split $.Comment "\n" }}
+            // {{ $.StructField }} {{ $line }}
+        {{- end }}
+    {{- else }}
+        // {{ $.StructField }} holds the value of the "{{ $.Name }}" field.
+    {{- end }}
+{{- end }}
+
+{{/* A template for setting the edge comment. */}}
+{{- define "model/edgecomment" }}
+    {{- if $.Comment }}
+        {{- range $line := split $.Comment "\n" }}
+            // {{ $.StructField }} {{ $line }}
+        {{- end }}
+    {{- else }}
+        // {{ $.StructField }} holds the value of the {{ $.Name }} edge.
+    {{- end }}
+{{- end }}

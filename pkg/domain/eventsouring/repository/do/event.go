@@ -15,38 +15,40 @@ import (
 )
 
 // Event is the model entity for the Event schema.
+// +gen:getter=true
+// +gen:setter=true
 type Event struct {
 	config `json:"-"`
 	// ID of the ent.
 	// event id
 	ID types.UUID `json:"id,omitempty"`
-	// aggregate id
+	// AggregateID aggregate id
 	AggregateID types.UUID `json:"aggregate_id,omitempty"`
-	// organisation id
+	// OrgID organisation id
 	OrgID types.UUID `json:"org_id,omitempty"`
-	// instance id
+	// InstanceID instance id
 	InstanceID types.UUID `json:"instance_id,omitempty"`
-	// aggregate semver version
+	// Version aggregate semver version
 	Version types.Version `json:"version,omitempty"`
-	// event creator
+	// Creator event creator
 	Creator types.UUID `json:"creator,omitempty"`
-	// event type
+	// Type event type
 	Type vo.EventType `json:"type,omitempty"`
-	// event aggregate type
+	// AggregateType event aggregate type
 	AggregateType vo.AggregateType `json:"aggregate_type,omitempty"`
-	// metadata JSON
+	// Metadata metadata JSON
 	Metadata do.StringMap `json:"metadata,omitempty"`
-	// event data JSON
+	// Data event data JSON
 	Data []byte `json:"data,omitempty"`
-	// event sequence
+	// Sequence event sequence
 	Sequence uint64 `json:"sequence,omitempty"`
-	// previous aggregate sequence
+	// PreviousAggregateSequence previous aggregate sequence
 	PreviousAggregateSequence uint64 `json:"previous_aggregate_sequence,omitempty"`
-	// previous aggregate type sequence
+	// PreviousAggregateTypeSequence previous aggregate type sequence
 	PreviousAggregateTypeSequence uint64 `json:"previous_aggregate_type_sequence,omitempty"`
-	// event create service
+	// Service event create service
 	Service string `json:"service,omitempty"`
-	// create event time
+	// CreateTime create event time
 	CreateTime time.Time `json:"create_time,omitempty"`
 }
 

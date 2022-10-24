@@ -13,8 +13,10 @@ require (
 require (
 	ariga.io/atlas v0.6.3 // indirect
 	entgo.io/contrib v0.3.1 // indirect
+	gitee.com/dwdcth/accessor v0.0.0-20201112031021-fb8f457f5da4 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/galaxyobe/gen v0.0.0-20220903051021-b9a4860b6aef // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
